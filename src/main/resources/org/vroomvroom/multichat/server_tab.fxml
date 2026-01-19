@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.vroomvroom.multichat.chat.server.ServerTabController"
+            prefHeight="400.0" prefWidth="600.0">
+
+    <top>
+        <HBox spacing="10" style="-fx-padding: 10;">
+            <Button fx:id="startServerButton" text="Start Server"
+                    onAction="#startServer" prefWidth="100"/>
+            <Button fx:id="stopServerButton" text="Stop Server"
+                    onAction="#stopServer" prefWidth="100" disable="true"/>
+            <Label text="Port:"/>
+            <TextField fx:id="portField" text="8080" prefWidth="80"/>
+            <Label text="Max Clients:"/>
+            <TextField fx:id="maxClientsField" text="10" prefWidth="80"/>
+            <Label fx:id="statusLabel" text="Status: Stopped"
+                   style="-fx-text-fill: red; -fx-font-weight: bold;"/>
+        </HBox>
+    </top>
+
+    <center>
+        <VBox spacing="5">
+            <Label text="Server Log:" style="-fx-font-weight: bold;"/>
+            <TextArea fx:id="logTextArea" editable="false"
+                      wrapText="true" VBox.vgrow="ALWAYS"/>
+        </VBox>
+    </center>
+
+    <bottom>
+        <HBox spacing="10" style="-fx-padding: 10;">
+            <Label text="Connected Clients:" style="-fx-font-weight: bold;"/>
+            <Label fx:id="clientCountLabel" text="0"/>
+            <Separator orientation="VERTICAL" prefHeight="20"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>

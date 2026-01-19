@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.vroomvroom.multichat.chat.client.ClientTabController"
+            prefHeight="400.0" prefWidth="600.0">
+
+    <top>
+        <HBox spacing="10" style="-fx-padding: 10;">
+            <Button fx:id="connectButton" text="Connect"
+                    onAction="#connectToServer" prefWidth="80"/>
+            <Button fx:id="disconnectButton" text="Disconnect"
+                    onAction="#disconnect" prefWidth="80" disable="true"/>
+            <Label text="Port:"/>
+            <TextField fx:id="portField" text="8080" prefWidth="80"/>
+            <Label fx:id="statusLabel" text="Disconnected"
+                   style="-fx-text-fill: red; -fx-font-weight: bold;"/>
+        </HBox>
+    </top>
+
+    <center>
+        <VBox spacing="5">
+            <Label text="Chat Messages:" style="-fx-font-weight: bold;"/>
+            <TextArea fx:id="chatTextArea" editable="false"
+                      wrapText="true" VBox.vgrow="ALWAYS"/>
+        </VBox>
+    </center>
+
+    <bottom>
+        <VBox spacing="5" style="-fx-padding: 10;">
+            <HBox spacing="5">
+                <TextField fx:id="messageField" promptText="Type your message here..."
+                           HBox.hgrow="ALWAYS" onAction="#sendMessage"/>
+                <Button fx:id="sendButton" text="Send" onAction="#sendMessage"
+                        prefWidth="80" disable="true"/>
+            </HBox>
+            <HBox spacing="10">
+                <CheckBox fx:id="autoScrollCheck" text="Auto-scroll" selected="true"/>
+                <Separator orientation="VERTICAL" prefHeight="20"/>
+            </HBox>
+        </VBox>
+    </bottom>
+
+</BorderPane>

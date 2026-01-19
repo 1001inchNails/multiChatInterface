@@ -1,0 +1,82 @@
+.root {
+    -fx-font-family: "Segoe UI", Arial, sans-serif;
+    -fx-font-size: 14px;
+}
+
+.text-area {
+    -fx-font-family: "Monospaced", "Courier New", monospace;
+    -fx-font-size: 13px;
+}
+
+.text-area .content {
+    -fx-background-color: #f8f9fa;
+    -fx-border-color: #dee2e6;
+    -fx-border-radius: 3px;
+}
+
+.button {
+    -fx-background-color: #007bff;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 4px;
+    -fx-padding: 6 12 6 12;
+}
+
+.button:hover {
+    -fx-background-color: #0056b3;
+}
+
+.button:disabled {
+    -fx-background-color: #6c757d;
+    -fx-text-fill: #e9ecef;
+}
+
+.text-field {
+    -fx-background-radius: 3px;
+    -fx-border-color: #ced4da;
+    -fx-border-radius: 3px;
+    -fx-padding: 5;
+}
+
+.text-field:focused {
+    -fx-border-color: #80bdff;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,123,255,0.25), 5, 0, 0, 0);
+}
+
+.tab-pane {
+    -fx-background-color: #f8f9fa;
+}
+
+.tab {
+    -fx-background-color: #e9ecef;
+    -fx-border-color: #dee2e6;
+    -fx-border-width: 0 1 0 0;
+}
+
+.tab:selected {
+    -fx-background-color: white;
+    -fx-border-color: transparent transparent #007bff transparent;
+    -fx-border-width: 0 0 3 0;
+}
+
+.label {
+    -fx-text-fill: #495057;
+}
+
+.check-box {
+    -fx-text-fill: #495057;
+}
+
+.check-box .box {
+    -fx-background-color: white;
+    -fx-border-color: #adb5bd;
+    -fx-border-radius: 3px;
+}
+
+.check-box:selected .mark {
+    -fx-background-color: #007bff;
+}
+
+.separator {
+    -fx-background-color: #dee2e6;
+}
