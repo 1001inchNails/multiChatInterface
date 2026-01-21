@@ -20,6 +20,10 @@ public class ClientHandler implements Runnable {
     private String clientAddress;
     private boolean isConnected = true;
 
+    private String clientName = "Unknown";
+
+
+    // controls the basic socket logic, to coordinate with the server
     public ClientHandler(Socket socket, CopyOnWriteArrayList<ClientHandler> clients, ServerTabController controller) {
         this.socket = socket;
         this.clients = clients;
@@ -41,30 +45,51 @@ public class ClientHandler implements Runnable {
             String firstMessage = input.readLine();
             controller.logMessage("Received from client: " + firstMessage);
 
-            if (firstMessage != null && firstMessage.startsWith("CLIENT_ID:")) {
-                try {
-                    String idStr = firstMessage.substring(10).trim();
-                    this.clientId = Integer.parseInt(idStr);
-                    controller.logMessage("Successfully parsed client ID: " + clientId + " from " + clientAddress);
-                } catch (NumberFormatException e) {
-                    controller.logMessage("Invalid client ID format: " + firstMessage + ". Using fallback.");
-                    this.clientId = clients.size() + 1;
+            if (firstMessage != null) {
+                if (firstMessage.startsWith("CLIENT_INFO:")) {
+                    try {
+                        String info = firstMessage.substring(12).trim();
+                        String[] parts = info.split(":", 2);
+
+                        if (parts.length >= 1) {
+                            this.clientId = Integer.parseInt(parts[0]);
+                        }
+
+                        if (parts.length >= 2) {
+                            this.clientName = parts[1];
+                        }
+
+                        controller.logMessage("Successfully parsed client info - ID: " + clientId + ", Name: " + clientName + " from " + clientAddress);
+                    } catch (NumberFormatException e) {
+                        controller.logMessage("Invalid client info format: " + firstMessage + ". Using fallback.");
+                        this.clientId = clients.size() + 1;
+                    }
+                } else if (firstMessage.startsWith("CLIENT_ID:")) {
+                    // Handle old format for backward compatibility
+                    try {
+                        String idStr = firstMessage.substring(10).trim();
+                        this.clientId = Integer.parseInt(idStr);
+                        controller.logMessage("Received old CLIENT_ID format, assigned ID: " + clientId);
+                    } catch (NumberFormatException e) {
+                        controller.logMessage("Invalid client ID format: " + firstMessage + ". Using fallback.");
+                        this.clientId = clients.size() + 1;
+                    }
                 }
             } else {
                 // use sequential ID if client doesn't send ID
                 // shouldnt actually happen, but you know...
                 this.clientId = clients.size() + 1;
-                controller.logMessage("No CLIENT_ID received. Assigned ID: " + clientId + " to " + clientAddress);
+                controller.logMessage("No CLIENT_ID received. Assigned ID: " + clientName + " to " + clientAddress);
             }
 
             output.println("SERVER: Welcome to MultiChat! You are client #" + clientId);
-            broadcast("Client #" + clientId + " (" + clientAddress + ") has joined the chat", null);
+            broadcast(clientName + " (" + clientAddress + ") has joined the chat", null);
 
-            controller.logMessage("Client #" + clientId + " connected from " + clientAddress);
+            controller.logMessage(clientName+ " connected from " + clientAddress);
 
             String message;
             while (isConnected && (message = input.readLine()) != null) {
-                String formattedMessage = "Client #" + clientId + ": " + message;
+                String formattedMessage = clientName+ ": " + message;
                 controller.logMessage(formattedMessage);
                 broadcast(formattedMessage, this);
             }
@@ -90,9 +115,8 @@ public class ClientHandler implements Runnable {
         isConnected = false;
         clients.remove(this);
         controller.decrementClientCount();
-
-        broadcast("SERVER: Client #" + clientId + " has left the chat", null);
-        controller.logMessage("Client #" + clientId + " disconnected");
+        broadcast("SERVER: Client " + clientName + " has left the chat", null);
+        controller.logMessage(clientName + " disconnected");
 
         try {
             if (socket != null && !socket.isClosed()) {

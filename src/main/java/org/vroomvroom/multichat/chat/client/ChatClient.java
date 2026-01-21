@@ -11,17 +11,20 @@ public class ChatClient {
 
     private final int port;
     private final ClientTabController controller;
-    private final int clientId;  // Tab number
+    private final int clientId;
+    private final String clientName;
     private Socket socket;
     private PrintWriter output;
     private BufferedReader input;
     private Thread receiveThread;
     private volatile boolean isConnected = false;
 
-    public ChatClient( int port, ClientTabController controller, int clientId) {
+    // uses the controller to manage the chat
+    public ChatClient( int port, ClientTabController controller, int clientId, String clientName) {
         this.port = port;
         this.controller = controller;
         this.clientId = clientId;
+        this.clientName = clientName;
     }
 
     public void start() {
@@ -33,7 +36,7 @@ public class ChatClient {
 
             // send client ID  to server as first message
             // this is all to avoid clients having a different number on tab title and inner client
-            output.println("CLIENT_ID:" + clientId);
+            output.println("CLIENT_INFO:" + clientId + ":" + clientName);
 
             isConnected = true;
 
@@ -112,5 +115,8 @@ public class ChatClient {
 
     public int getClientId() {
         return clientId;
+    }
+    public String getClientName() {
+        return clientName;
     }
 }

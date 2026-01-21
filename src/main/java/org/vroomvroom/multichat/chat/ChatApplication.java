@@ -1,12 +1,18 @@
 package org.vroomvroom.multichat.chat;
 
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
 import org.vroomvroom.multichat.chat.client.ClientTabController;
 import org.vroomvroom.multichat.chat.server.ServerTabController;
+
+import java.util.Optional;
 
 public class ChatApplication extends Application {
 
@@ -17,10 +23,10 @@ public class ChatApplication extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
-            // main container
-            BorderPane root = new BorderPane();
 
-            // tab pane
+            // main settings
+
+            BorderPane root = new BorderPane();
             tabPane = new TabPane();
 
             // server tab
@@ -65,6 +71,7 @@ public class ChatApplication extends Application {
         return menuBar;
     }
 
+    // the one and only server tab
     private void createServerTab() {
         try {
             ServerTabController controller = new ServerTabController();
@@ -77,12 +84,28 @@ public class ChatApplication extends Application {
         }
     }
 
+    // user created client tabs
     private void createNewClientTab() {
         try {
+
+            // name input
+            String clientName = showNameInputDialog();
+
+            // cancel? No client for you, bitch
+            if (clientName == null || clientName.isEmpty()) {
+                return;
+            }
+
+            // set the controller
             ClientTabController controller = new ClientTabController();
+
+            // set the name
+            controller.setClientName(clientName);
+            // set the id
             controller.setClientId(clientCounter);
 
-            Tab clientTab = new Tab("Client " + clientCounter);
+            // the actual tab
+            Tab clientTab = new Tab(clientName + "'s Chat");
             clientTab.setContent(controller.getRoot());
             clientTab.setClosable(true);
 
@@ -97,6 +120,56 @@ public class ChatApplication extends Application {
         } catch (Exception e) {
             showError("Client Tab Error", "Failed to create client tab: " + e.getMessage());
         }
+    }
+
+    // name input modal
+    private String showNameInputDialog() {
+
+        Dialog<String> dialog = new Dialog<>();
+        dialog.setTitle("New Chat");
+        dialog.setHeaderText("Please enter name:");
+
+        ButtonType okButtonType = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(okButtonType, ButtonType.CANCEL);
+
+        TextField nameField = new TextField();
+        nameField.setPromptText("Name");
+
+        // enable/disable OK button
+        Button okButton = (Button) dialog.getDialogPane().lookupButton(okButtonType);
+        okButton.setDisable(true);
+
+        // listener to enable/disable OK button
+        nameField.textProperty().addListener((observable, oldValue, newValue) -> {
+            okButton.setDisable(newValue.trim().isEmpty());
+        });
+
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 150, 10, 10));
+
+        Label nameLabel = new Label("Name:");
+        grid.add(nameLabel, 0, 0);
+        grid.add(nameField, 1, 0);
+        GridPane.setHgrow(nameField, Priority.ALWAYS);
+
+        dialog.getDialogPane().setContent(grid);
+
+        Platform.runLater(nameField::requestFocus);
+
+        // convert to string
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == okButtonType) {
+                return nameField.getText().trim();
+            }
+            return null;
+        });
+
+        // show and wait
+        Optional<String> result = dialog.showAndWait();
+
+        return result.orElse(null);
     }
 
     private void showError(String title, String message) {

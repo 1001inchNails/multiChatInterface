@@ -29,9 +29,12 @@ public class ClientTabController {
     private CheckBox autoScrollCheck;
 
     private ChatClient chatClient;
-    private int clientId;  // Tab number
+    private int clientId;
+    private String clientName;
     private SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
+
+    // controls the visuals and logic for client tabs
     public ClientTabController() {
         createUI();
         initialize();
@@ -128,8 +131,16 @@ public class ClientTabController {
         this.clientId = id;
     }
 
+    public void setClientName(String name) {
+        this.clientName = name;
+    }
+
+
     public int getClientId() {
         return clientId;
+    }
+    public String getClientName() {
+        return clientName;
     }
 
     public void connectToServer() {
@@ -137,7 +148,7 @@ public class ClientTabController {
             int port = Integer.parseInt(portField.getText());
 
             // pass clientId to ChatClient
-            chatClient = new ChatClient(port, this, clientId);
+            chatClient = new ChatClient(port, this, clientId, clientName);
             chatClient.start();
 
             connectButton.setDisable(true);
